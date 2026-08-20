@@ -1,0 +1,3453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>ChatApp Meeting</title>
+
+    <style>
+
+        /* =========================================================
+        CHATAPP MEETING — MODERN VIDEO UI
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --meeting-bg: #0b0f19;
+            --meeting-surface: #111827;
+            --meeting-surface-2: #182131;
+            --meeting-border: rgba(255,255,255,.08);
+
+            --meeting-text: #f8fafc;
+            --meeting-muted: #94a3b8;
+
+            --primary: #6366f1;
+            --primary-hover: #818cf8;
+
+            --danger: #ef4444;
+            --success: #22c55e;
+
+            --radius: 16px;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+
+            background:
+                radial-gradient(
+                    circle at 15% 15%,
+                    rgba(99,102,241,.08),
+                    transparent 30%
+                ),
+                #080b12;
+
+            color: var(--meeting-text);
+
+            font-family:
+                Inter,
+                Arial,
+                sans-serif;
+
+            overflow: hidden;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+
+        /* =========================================================
+        MAIN PAGE
+        ========================================================= */
+
+        .meeting-page {
+            width: 100%;
+            height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+
+            overflow: hidden;
+        }
+
+
+        /* =========================================================
+        HEADER
+        ========================================================= */
+
+        .meeting-header {
+            height: 68px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 22px;
+
+            background:
+                rgba(17,24,39,.92);
+
+            border-bottom: 1px solid var(--meeting-border);
+
+            backdrop-filter: blur(18px);
+
+            z-index: 10;
+        }
+
+        .meeting-title {
+            min-width: 0;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 5px;
+        }
+
+        .meeting-title h2 {
+            margin: 0;
+
+            font-size: 16px;
+            font-weight: 700;
+
+            letter-spacing: -.2px;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+        }
+
+        .meeting-code {
+            color: var(--meeting-muted);
+
+            font-size: 11px;
+
+            letter-spacing: .3px;
+        }
+
+        .meeting-status {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            padding: 6px 10px;
+
+            border-radius: 20px;
+
+            background: rgba(34,197,94,.1);
+
+            color: #86efac;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            letter-spacing: .5px;
+        }
+
+        .meeting-status::before {
+            content: "";
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: var(--success);
+
+            box-shadow:
+                0 0 0 4px
+                rgba(34,197,94,.1);
+        }
+
+
+        /* =========================================================
+        MAIN CONTENT
+        ========================================================= */
+
+        .meeting-main {
+            flex: 1;
+
+            min-height: 0;
+
+            display: flex;
+        }
+
+
+        /* =========================================================
+        VIDEO AREA
+        ========================================================= */
+
+        .video-area {
+            flex: 1;
+
+            min-width: 0;
+
+            min-height: 0;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /* =========================================================
+        VIDEO GRID
+        ========================================================= */
+
+        .video-grid {
+            flex: 1;
+            min-height: 0;
+
+            display: grid;
+
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(300px, 1fr)
+            );
+
+            grid-auto-rows: minmax(220px, 1fr);
+
+            align-content: start;
+
+            gap: 14px;
+
+            padding: 18px;
+
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            scrollbar-width: thin;
+
+            contain: layout paint;
+        }
+
+        .video-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .video-grid::-webkit-scrollbar-thumb {
+            background: #263244;
+
+            border-radius: 10px;
+        }
+
+
+        /* =========================================================
+        VIDEO CARD
+        ========================================================= */
+
+        .video-card {
+            position: relative;
+
+            height: 100%;
+            min-height: 220px;
+
+            aspect-ratio: 16 / 9;
+
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #151d2b,
+                    #0f1520
+                );
+
+            border:
+                1px solid
+                rgba(255,255,255,.08);
+
+            border-radius: var(--radius);
+
+            box-shadow:
+                0 10px 35px
+                rgba(0,0,0,.25);
+
+            isolation: isolate;
+        }
+
+        .video-card::after {
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            border-radius: inherit;
+
+            box-shadow:
+                inset 0 0 0 1px
+                rgba(255,255,255,.025);
+        }
+
+        .video-card video {
+            width: 100%;
+            height: 100%;
+
+            min-height: 0;
+
+            display: block;
+
+            object-fit: cover;
+
+            background:
+                radial-gradient(
+                    circle,
+                    #202b3c,
+                    #090d15
+                );
+        }
+
+
+        /* =========================================================
+        VIDEO LABEL
+        ========================================================= */
+
+        .video-label {
+            position: absolute;
+
+            left: 12px;
+            bottom: 12px;
+
+            z-index: 3;
+
+            display: flex;
+            align-items: center;
+
+            padding: 7px 10px;
+
+            border-radius: 8px;
+
+            background:
+                rgba(0,0,0,.58);
+
+            color: white;
+
+            backdrop-filter: blur(8px);
+
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+
+        /* =========================================================
+        SCREEN SHARE
+        ========================================================= */
+
+        .screen-share-card {
+            grid-column: 1 / -1;
+            min-height: 360px;
+            aspect-ratio: 16 / 9;
+        }
+
+        .screen-share-card video {
+            min-height: 360px;
+        }
+
+        .share-indicator {
+            position: absolute;
+
+            top: 12px;
+            left: 12px;
+
+            z-index: 5;
+
+            display: inline-flex;
+            align-items: center;
+
+            gap: 6px;
+
+            padding: 7px 10px;
+
+            border-radius: 8px;
+
+            background: #dc2626;
+
+            color: white;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            box-shadow:
+                0 5px 20px
+                rgba(220,38,38,.25);
+        }
+
+
+        /* =========================================================
+        CONTROL BAR
+        ========================================================= */
+
+        .controls {
+            height: 82px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 10px;
+
+            padding: 12px 20px;
+
+            background:
+                rgba(17,24,39,.96);
+
+            border-top: 1px solid var(--meeting-border);
+
+            backdrop-filter: blur(15px);
+        }
+
+        .control-btn {
+            width: 46px;
+            height: 46px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid rgba(255,255,255,.06);
+
+            border-radius: 50%;
+
+            background: #202938;
+
+            color: #e2e8f0;
+
+            font-size: 17px;
+
+            transition:
+                transform .15s,
+                background .15s,
+                box-shadow .15s;
+        }
+
+        .control-btn:hover {
+            background: #2b374a;
+
+            transform: translateY(-2px);
+        }
+
+        .control-btn:active {
+            transform: scale(.95);
+        }
+
+        .control-btn.active {
+            background: var(--primary);
+
+            border-color: var(--primary);
+
+            color: white;
+
+            box-shadow:
+                0 5px 18px
+                rgba(99,102,241,.25);
+        }
+
+        .control-btn.active:hover {
+            background: var(--primary-hover);
+        }
+
+        .control-btn.danger {
+            margin-left: 8px;
+
+            background: var(--danger);
+
+            border-color: var(--danger);
+
+            color: white;
+
+            box-shadow:
+                0 5px 18px
+                rgba(239,68,68,.2);
+        }
+
+        .control-btn.danger:hover {
+            background: #dc2626;
+        }
+
+
+        /* =========================================================
+        SIDE PANEL
+        ========================================================= */
+
+        .side-panel {
+            width: 330px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            flex-direction: column;
+
+            background:
+                rgba(17,24,39,.96);
+
+            border-left:
+                1px solid
+                var(--meeting-border);
+
+            backdrop-filter: blur(18px);
+        }
+
+
+        /* =========================================================
+        SIDE TABS
+        ========================================================= */
+
+        .side-tabs {
+            height: 58px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            border-bottom:
+                1px solid
+                var(--meeting-border);
+        }
+
+        .side-tab {
+            position: relative;
+
+            flex: 1;
+
+            border: none;
+
+            background: transparent;
+
+            color: var(--meeting-muted);
+
+            padding: 15px;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            transition: .2s;
+        }
+
+        .side-tab:hover {
+            color: white;
+
+            background: rgba(255,255,255,.025);
+        }
+
+        .side-tab.active {
+            color: white;
+        }
+
+        .side-tab.active::after {
+            content: "";
+
+            position: absolute;
+
+            left: 20%;
+            right: 20%;
+
+            bottom: 0;
+
+            height: 2px;
+
+            border-radius: 10px;
+
+            background: var(--primary);
+        }
+
+
+        /* =========================================================
+        PANEL CONTENT
+        ========================================================= */
+
+        .panel-content {
+            flex: 1;
+
+            min-height: 0;
+
+            display: flex;
+            flex-direction: column;
+
+            overflow: hidden;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+
+        /* =========================================================
+        PARTICIPANT SUMMARY
+        ========================================================= */
+
+        #participantSummary {
+            padding: 13px 15px !important;
+
+            color: var(--meeting-muted) !important;
+
+            background:
+                rgba(255,255,255,.015);
+
+            border-bottom:
+                1px solid
+                var(--meeting-border) !important;
+
+            font-size: 11px !important;
+        }
+
+
+        /* =========================================================
+        PARTICIPANTS
+        ========================================================= */
+
+        .participants {
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding: 9px;
+
+            scrollbar-width: thin;
+        }
+
+        .participants::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .participants::-webkit-scrollbar-thumb {
+            background: #293548;
+
+            border-radius: 10px;
+        }
+
+        .participant {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 9px 10px;
+
+            border-radius: 10px;
+
+            transition: .15s;
+        }
+
+        .participant:hover {
+            background:
+                rgba(255,255,255,.045);
+        }
+
+        .participant-avatar {
+            width: 36px;
+            height: 36px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6366f1,
+                    #8b5cf6
+                );
+
+            color: white;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .participant-name {
+            flex: 1;
+
+            min-width: 0;
+
+            color: #e5e7eb;
+
+            font-size: 12px;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+        }
+
+        .participant-icons {
+            color: var(--meeting-muted);
+
+            font-size: 13px;
+        }
+
+
+        /* =========================================================
+        MEETING CHAT
+        ========================================================= */
+
+        .chat-messages {
+            flex: 1;
+
+            min-height: 0;
+
+            overflow-y: auto;
+
+            padding: 15px;
+
+            scrollbar-width: thin;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #293548;
+
+            border-radius: 10px;
+        }
+
+        .chat-message {
+            margin-bottom: 14px;
+        }
+
+        .chat-sender {
+            margin-bottom: 5px;
+
+            color: #a5b4fc;
+
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .chat-time {
+            margin-left: 5px;
+
+            color: #64748b;
+
+            font-size: 9px;
+        }
+
+        .chat-text {
+            display: inline-block;
+
+            max-width: 90%;
+
+            padding: 9px 11px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.06);
+
+            border-radius: 10px;
+
+            background: #202938;
+
+            color: #e5e7eb;
+
+            word-break: break-word;
+
+            line-height: 1.45;
+
+            font-size: 12px;
+        }
+
+
+        /* =========================================================
+        CHAT INPUT
+        ========================================================= */
+
+        .chat-input {
+            display: flex;
+
+            gap: 7px;
+
+            padding: 11px;
+
+            border-top:
+                1px solid
+                var(--meeting-border);
+
+            background:
+                rgba(255,255,255,.015);
+        }
+
+        .chat-input input {
+            flex: 1;
+
+            min-width: 0;
+
+            height: 38px;
+
+            padding: 0 12px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.08);
+
+            border-radius: 9px;
+
+            outline: none;
+
+            background: #202938;
+
+            color: white;
+
+            font-size: 11px;
+
+            transition: .2s;
+        }
+
+        .chat-input input::placeholder {
+            color: #64748b;
+        }
+
+        .chat-input input:focus {
+            border-color: var(--primary);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(99,102,241,.1);
+        }
+
+        .chat-input button {
+            height: 38px;
+
+            padding: 0 14px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: var(--primary);
+
+            color: white;
+
+            font-size: 11px;
+            font-weight: 600;
+
+            transition: .2s;
+        }
+
+        .chat-input button:hover {
+            background: var(--primary-hover);
+        }
+
+
+        /* =========================================================
+        LOCAL SCREEN PREVIEW
+        ========================================================= */
+
+        #localScreenPreview {
+            position: fixed !important;
+
+            right: 22px !important;
+
+            bottom: 102px !important;
+
+            width: 260px !important;
+
+            max-height: 180px;
+
+            object-fit: cover;
+
+            border:
+                2px solid
+                var(--primary) !important;
+
+            border-radius: 13px !important;
+
+            box-shadow:
+                0 15px 40px
+                rgba(0,0,0,.45);
+
+            z-index: 20;
+        }
+
+
+        /* =========================================================
+        RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1000px) {
+
+            .side-panel {
+                width: 280px;
+            }
+
+            .video-grid {
+                grid-template-columns:
+                    repeat(
+                        auto-fit,
+                        minmax(
+                            240px,
+                            1fr
+                        )
+                    );
+            }
+
+        }
+
+
+        @media (max-width: 780px) {
+
+            .meeting-header {
+                padding: 0 14px;
+            }
+
+            .meeting-title h2 {
+                font-size: 14px;
+            }
+
+            .side-panel {
+                width: 250px;
+            }
+
+            .video-grid {
+                padding: 10px;
+
+                gap: 9px;
+            }
+
+            .video-card {
+                min-height: 180px;
+            }
+
+            .video-card video {
+                min-height: 180px;
+            }
+
+            .controls {
+                height: 70px;
+
+                gap: 6px;
+
+                padding: 10px;
+            }
+
+            .control-btn {
+                width: 40px;
+                height: 40px;
+
+                font-size: 15px;
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .meeting-header {
+                height: 58px;
+            }
+
+            .meeting-code {
+                font-size: 9px;
+            }
+
+            .meeting-status {
+                padding: 5px 8px;
+
+                font-size: 8px;
+            }
+
+            .meeting-main {
+                position: relative;
+            }
+
+            .side-panel {
+                position: absolute;
+
+                right: 0;
+                top: 0;
+                bottom: 70px;
+
+                width: 85%;
+
+                z-index: 30;
+
+                box-shadow:
+                    -15px 0 40px
+                    rgba(0,0,0,.35);
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+
+                padding: 8px;
+            }
+
+            .video-card {
+                min-height: 210px;
+            }
+
+            .video-card video {
+                min-height: 210px;
+            }
+
+            .controls {
+                height: 70px;
+
+                gap: 5px;
+
+                padding: 8px;
+            }
+
+            .control-btn {
+                width: 38px;
+                height: 38px;
+
+                font-size: 14px;
+            }
+
+            .control-btn.danger {
+                margin-left: 4px;
+            }
+
+            #localScreenPreview {
+                width: 180px !important;
+
+                bottom: 82px !important;
+
+                right: 10px !important;
+            }
+
+            .remote-video-card {
+                contain: layout paint;
+                overflow: hidden;
+            }
+
+            
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="meeting-page">
+
+    <header class="meeting-header">
+
+        <div class="meeting-title">
+
+            <h2 id="meetingTitle">
+                ChatApp Meeting
+            </h2>
+
+            <span
+                id="meetingCode"
+                class="meeting-code">
+            </span>
+
+        </div>
+
+        <span
+            id="meetingStatus"
+            class="meeting-status">
+
+            CONNECTING
+
+        </span>
+
+    </header>
+
+
+    <main class="meeting-main">
+
+        <section class="video-area">
+
+            <div
+                id="videoGrid"
+                class="video-grid">
+
+                <div
+                    id="localVideoCard"
+                    class="video-card">
+
+                    <video
+                        id="localVideo"
+                        autoplay
+                        muted
+                        playsinline>
+                    </video>
+
+                    <span
+                        id="localVideoLabel"
+                        class="video-label">
+
+                        You
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="controls">
+
+                <button
+                    id="micButton"
+                    class="control-btn active"
+                    onclick="toggleMicrophone()">
+
+                    🎤
+
+                </button>
+
+                <button
+                    id="cameraButton"
+                    class="control-btn active"
+                    onclick="toggleCamera()">
+
+                    📹
+
+                </button>
+
+                <button
+                    id="screenButton"
+                    class="control-btn"
+                    onclick="toggleScreenShare()">
+
+                    🖥️
+
+                </button>
+
+                <button
+                    class="control-btn"
+                    onclick="togglePanel('participants')">
+
+                    👥
+
+                </button>
+
+                <button
+                    class="control-btn"
+                    onclick="togglePanel('chat')">
+
+                    💬
+
+                </button>
+
+                <button
+                    class="control-btn"
+                    onclick="toggleFullscreen()">
+
+                    ⛶
+
+                </button>
+
+                <button
+                    class="control-btn danger"
+                    onclick="leaveMeeting()">
+
+                    📞
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <aside
+            class="side-panel">
+
+            <div class="side-tabs">
+
+                <button
+                    id="participantsTab"
+                    class="side-tab active"
+                    onclick="togglePanel('participants')">
+
+                    Participants
+
+                </button>
+
+                <button
+                    id="chatTab"
+                    class="side-tab"
+                    onclick="togglePanel('chat')">
+
+                    Chat
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="participantsPanel"
+                class="panel-content">
+
+                <div
+                    id="participantSummary"
+                    style="padding:12px 14px;color:#aaa;font-size:13px;border-bottom:1px solid #2a2b30;">
+                    0 participants
+                </div>
+
+                <div
+                    id="participants"
+                    class="participants">
+                </div>
+
+            </div>
+
+
+            <div
+                id="chatPanel"
+                class="panel-content hidden">
+
+                <div
+                    id="chatMessages"
+                    class="chat-messages">
+                </div>
+
+                <div class="chat-input">
+
+                    <input
+                        id="meetingChatInput"
+                        placeholder="Type a message..."
+                        onkeydown="handleMeetingChatKey(event)">
+
+                    <button
+                        onclick="sendMeetingChat()">
+
+                        Send
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+    </main>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+
+
+<script>
+
+let meetingId = null;
+
+let meetingCode = null;
+
+let meetingCreatorId = null;
+
+let meetingCreatorName = "Admin";
+
+let currentUser = null;
+
+let stompClient = null;
+
+let localStream = null;
+
+let screenStream = null;
+
+let microphoneEnabled = true;
+
+let cameraEnabled = true;
+
+let sharingScreen = false;
+
+
+/*
+ * userId -> RTCPeerConnection
+ */
+const peers = {};
+
+
+/*
+ * userId -> username
+ */
+const participantNames = {};
+
+
+/*
+ * STUN server.
+ */
+const rtcConfiguration = {
+
+    iceServers: [
+
+        {
+            urls:
+                "stun:stun.l.google.com:19302"
+        }
+
+    ]
+
+};
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    initializeMeeting
+);
+
+
+// ============================================================
+// INITIALIZE
+// ============================================================
+
+async function initializeMeeting() {
+
+    try {
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        meetingCode =
+            params.get("code");
+
+        if (!meetingCode) {
+
+            throw new Error(
+                "Meeting code is missing."
+            );
+        }
+
+
+        /*
+         * Get logged-in user from
+         * existing ChatApp login.
+         */
+        const savedUser =
+            localStorage.getItem(
+                "chatUser"
+            );
+
+        if (!savedUser) {
+
+            throw new Error(
+                "You are not logged in."
+            );
+        }
+
+        currentUser =
+            JSON.parse(savedUser);
+
+
+        if (!currentUser.id) {
+
+            throw new Error(
+                "Invalid user session."
+            );
+        }
+
+
+        await loadMeeting();
+
+
+        await startLocalMedia();
+
+
+        connectWebSocket();
+
+
+    } catch (error) {
+
+        console.error(
+            "Meeting initialization error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to start meeting."
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// LOAD MEETING
+// ============================================================
+
+async function loadMeeting() {
+
+    const response =
+        await fetch(
+            "/api/meetings/code/" +
+            encodeURIComponent(
+                meetingCode
+            )
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Meeting not found."
+        );
+    }
+
+
+    const meeting =
+        await response.json();
+
+
+    meetingId =
+        Number(meeting.id);
+
+    meetingCreatorId =
+        Number(meeting.createdBy);
+
+    meetingCreatorName =
+        meetingCreatorId === Number(currentUser.id)
+            ? (currentUser.username || "You")
+            : "Admin";
+
+
+    document.getElementById(
+        "meetingTitle"
+    ).textContent =
+        meeting.title;
+
+
+    document.getElementById(
+        "meetingCode"
+    ).textContent =
+        "Code: " +
+        meeting.meetingCode;
+
+
+    document.getElementById(
+        "meetingStatus"
+    ).textContent =
+        meeting.status;
+
+
+    if (
+        meeting.status ===
+        "COMPLETED"
+    ) {
+
+        throw new Error(
+            "This meeting has ended."
+        );
+    }
+
+}
+
+
+// ============================================================
+// LOCAL CAMERA + MICROPHONE
+// ============================================================
+
+async function startLocalMedia() {
+
+    if (
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ) {
+
+        throw new Error(
+            "Your browser does not support camera access."
+        );
+    }
+
+
+    localStream =
+        await navigator.mediaDevices
+            .getUserMedia({
+
+                video: true,
+
+                audio: true
+
+            });
+
+
+    document.getElementById(
+        "localVideo"
+    ).srcObject =
+        localStream;
+
+}
+
+
+// ============================================================
+// WEBSOCKET
+// ============================================================
+
+function connectWebSocket() {
+
+    console.log("Starting STOMP connection...");
+
+    stompClient = new StompJs.Client({
+
+        webSocketFactory: function () {
+
+            console.log("Creating SockJS connection...");
+
+            return new SockJS("/ws");
+        },
+
+        reconnectDelay: 5000,
+
+        heartbeatIncoming: 10000,
+
+        heartbeatOutgoing: 10000,
+
+        debug: function (message) {
+
+            console.log("[STOMP]", message);
+
+        }
+
+    });
+
+
+    /*
+     * Successful STOMP connection
+     */
+    stompClient.onConnect = function (frame) {
+
+        console.log(
+            "STOMP CONNECTED:",
+            frame
+        );
+
+
+        document.getElementById(
+            "meetingStatus"
+        ).textContent = "LIVE";
+
+
+        /*
+         * Subscribe to meeting events
+         */
+        subscribeMeeting();
+
+
+        /*
+         * Add ourselves
+         */
+        addParticipant(
+            currentUser.id,
+            currentUser.username || "You"
+        );
+
+
+        updateParticipantSummary();
+
+
+        /*
+         * Tell everyone that we joined
+         */
+        sendJoinEvent();
+
+    };
+
+
+    /*
+     * STOMP broker error
+     */
+    stompClient.onStompError = function (frame) {
+
+        console.error(
+            "STOMP broker error:",
+            frame
+        );
+
+
+        document.getElementById(
+            "meetingStatus"
+        ).textContent = "OFFLINE";
+
+    };
+
+
+    /*
+     * WebSocket error
+     */
+    stompClient.onWebSocketError = function (error) {
+
+        console.error(
+            "WebSocket error:",
+            error
+        );
+
+
+        document.getElementById(
+            "meetingStatus"
+        ).textContent = "OFFLINE";
+
+    };
+
+
+    /*
+     * WebSocket closed
+     */
+    stompClient.onWebSocketClose = function (event) {
+
+        console.warn(
+            "WebSocket closed:",
+            event
+        );
+
+
+        document.getElementById(
+            "meetingStatus"
+        ).textContent = "OFFLINE";
+
+    };
+
+
+    /*
+     * START CONNECTION
+     */
+    stompClient.activate();
+
+}
+
+// ============================================================
+// SUBSCRIBE
+// ============================================================
+
+function subscribeMeeting() {
+
+    if (
+        !stompClient ||
+        !stompClient.connected
+    ) {
+
+        console.error(
+            "Cannot subscribe: STOMP is not connected."
+        );
+
+        return;
+    }
+
+
+    console.log(
+        "Subscribing to meeting:",
+        meetingId
+    );
+
+
+    stompClient.subscribe(
+
+        "/topic/meeting/" + meetingId,
+
+        function (message) {
+
+            console.log(
+                "Meeting event received:",
+                message.body
+            );
+
+
+            try {
+
+                const data =
+                    JSON.parse(
+                        message.body
+                    );
+
+
+                handleMeetingEvent(
+                    data
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Meeting event parsing error:",
+                    error
+                );
+
+            }
+
+        }
+
+    );
+
+}
+// ============================================================
+// JOIN
+// ============================================================
+
+function sendJoinEvent() {
+
+    if (
+        !stompClient ||
+        !stompClient.connected
+    ) {
+
+        console.error(
+            "Cannot send JOIN: STOMP not connected."
+        );
+
+        return;
+    }
+
+
+    const payload = {
+
+        meetingId:
+            Number(meetingId),
+
+        userId:
+            Number(currentUser.id),
+
+        username:
+            currentUser.username || "User"
+
+    };
+
+
+    console.log(
+        "Sending JOIN:",
+        payload
+    );
+
+
+    stompClient.publish({
+
+        destination:
+            "/app/meeting.join",
+
+        body:
+            JSON.stringify(payload)
+
+    });
+
+}
+
+// ============================================================
+// EVENT HANDLER
+// ============================================================
+
+function handleMeetingEvent(data) {
+
+    const type =
+        data.type;
+
+
+    // ---------------------------------------------
+    // PARTICIPANT ALREADY IN ROOM
+    // ---------------------------------------------
+
+    if (type === "PARTICIPANT") {
+
+        const id =
+            Number(data.userId);
+
+
+        if (
+            id ===
+            Number(currentUser.id)
+        ) {
+            return;
+        }
+
+
+        addParticipant(
+            id,
+            data.username
+        );
+
+
+        /*
+         * The existing participant creates
+         * the WebRTC offer for the new user.
+         */
+        if (
+            Number(data.targetUserId) ===
+            Number(currentUser.id)
+        ) {
+
+            createOffer(
+                id
+            );
+
+        }
+
+
+        return;
+    }
+
+
+    // ---------------------------------------------
+    // JOIN
+    // ---------------------------------------------
+
+    if (type === "JOIN") {
+
+        const id =
+            Number(data.userId);
+
+
+        if (
+            id ===
+            Number(currentUser.id)
+        ) {
+            return;
+        }
+
+
+        addParticipant(
+            id,
+            data.username
+        );
+
+
+        /*
+         * New user will receive offers
+         * from existing users.
+         */
+
+        return;
+    }
+
+
+    // ---------------------------------------------
+    // LEAVE
+    // ---------------------------------------------
+
+    if (type === "LEAVE") {
+
+        const id =
+            Number(data.userId);
+
+
+        removeParticipant(
+            id
+        );
+
+
+        closePeer(
+            id
+        );
+
+
+        return;
+    }
+
+
+    // ---------------------------------------------
+    // WEBRTC SIGNAL
+    // ---------------------------------------------
+
+    if (type === "SIGNAL") {
+
+        handleSignal(
+            data
+        );
+
+
+        return;
+    }
+
+
+    // ---------------------------------------------
+    // MEETING CHAT
+    // ---------------------------------------------
+
+    if (type === "CHAT") {
+
+        addChatMessage(
+            data.username || "User",
+            data.message || "",
+            data.timestamp
+        );
+
+        return;
+    }
+
+
+    // ---------------------------------------------
+    // SCREEN SHARE
+    // ---------------------------------------------
+
+    if (type === "SCREEN") {
+
+        const id =
+            Number(data.userId);
+
+
+        if (
+            id ===
+            Number(currentUser.id)
+        ) {
+            return;
+        }
+
+
+        const participant =
+            document.getElementById(
+                "participant-" +
+                id
+            );
+
+
+        if (!participant) {
+            return;
+        }
+
+
+        const icon =
+            participant.querySelector(
+                ".participant-icons"
+            );
+
+
+        if (icon) {
+
+            icon.textContent =
+                data.active
+                    ? "🖥️"
+                    : "🎤";
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// CREATE PEER
+// ============================================================
+
+function createPeerConnection(
+    remoteUserId
+) {
+
+    const id =
+        Number(remoteUserId);
+
+
+    if (peers[id]) {
+
+        return peers[id];
+
+    }
+
+
+    const peer =
+        new RTCPeerConnection(
+            rtcConfiguration
+        );
+
+
+    peers[id] =
+        peer;
+
+
+    /*
+     * Add local camera + microphone.
+     */
+    if (localStream) {
+
+        localStream
+            .getTracks()
+            .forEach(track => {
+
+                peer.addTrack(
+                    track,
+                    localStream
+                );
+
+            });
+
+    }
+
+
+    /*
+     * Remote media.
+     */
+    peer.ontrack =
+        function (event) {
+
+            const stream =
+                event.streams[0];
+
+            if (!stream) {
+                return;
+            }
+
+            attachRemoteVideo(
+                id,
+                stream,
+                participantNames[id] ||
+                "User"
+            );
+
+        };
+
+
+    /*
+     * ICE candidates.
+     */
+    peer.onicecandidate =
+        function (event) {
+
+            if (
+                !event.candidate
+            ) {
+                return;
+            }
+
+
+            sendSignal(
+
+                "ICE",
+
+                id,
+
+                event.candidate
+
+            );
+
+        };
+
+
+    peer.onconnectionstatechange =
+        function () {
+
+            console.log(
+                "Peer",
+                id,
+                "state:",
+                peer.connectionState
+            );
+
+
+            if (
+                peer.connectionState ===
+                    "failed" ||
+
+                peer.connectionState ===
+                    "closed" ||
+
+                peer.connectionState ===
+                    "disconnected"
+            ) {
+
+                closePeer(id);
+
+            }
+
+        };
+
+
+    return peer;
+
+}
+
+
+// ============================================================
+// CREATE OFFER
+// ============================================================
+
+async function createOffer(
+    remoteUserId
+) {
+
+    const id =
+        Number(remoteUserId);
+
+
+    const peer =
+        createPeerConnection(
+            id
+        );
+
+
+    try {
+
+        const offer =
+            await peer.createOffer();
+
+
+        await peer.setLocalDescription(
+            offer
+        );
+
+
+        sendSignal(
+
+            "OFFER",
+
+            id,
+
+            offer
+
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Offer error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// HANDLE SIGNAL
+// ============================================================
+
+async function handleSignal(
+    data
+) {
+
+    const fromUserId =
+        Number(data.fromUserId);
+
+
+    const toUserId =
+        Number(data.toUserId);
+
+
+    /*
+     * Ignore signals intended
+     * for somebody else.
+     */
+    if (
+        toUserId !==
+        Number(currentUser.id)
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        fromUserId ===
+        Number(currentUser.id)
+    ) {
+
+        return;
+
+    }
+
+
+    const peer =
+        createPeerConnection(
+            fromUserId
+        );
+
+
+    try {
+
+        const signalType =
+            data.type;
+
+
+        if (
+            signalType ===
+            "OFFER"
+        ) {
+
+            await peer.setRemoteDescription(
+                new RTCSessionDescription(
+                    data.data
+                )
+            );
+
+
+            const answer =
+                await peer.createAnswer();
+
+
+            await peer.setLocalDescription(
+                answer
+            );
+
+
+            sendSignal(
+
+                "ANSWER",
+
+                fromUserId,
+
+                answer
+
+            );
+
+        }
+
+
+        else if (
+            signalType ===
+            "ANSWER"
+        ) {
+
+            await peer.setRemoteDescription(
+                new RTCSessionDescription(
+                    data.data
+                )
+            );
+
+        }
+
+
+        else if (
+            signalType ===
+            "ICE"
+        ) {
+
+            try {
+
+                await peer.addIceCandidate(
+                    new RTCIceCandidate(
+                        data.data
+                    )
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "ICE candidate error:",
+                    error
+                );
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "WebRTC signaling error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// SEND SIGNAL
+// ============================================================
+
+function sendSignal(
+    signalType,
+    remoteUserId,
+    data
+) {
+
+    if (
+        !stompClient ||
+        !stompClient.connected
+    ) {
+
+        console.error(
+            "Cannot send WebRTC signal: STOMP not connected."
+        );
+
+        return;
+    }
+
+
+    const payload = {
+
+        meetingId:
+            Number(meetingId),
+
+        fromUserId:
+            Number(currentUser.id),
+
+        toUserId:
+            Number(remoteUserId),
+
+        username:
+            currentUser.username || "User",
+
+        signalType:
+            signalType,
+
+        data:
+            data
+
+    };
+
+
+    console.log(
+        "Sending WebRTC signal:",
+        payload
+    );
+
+
+    stompClient.publish({
+
+        destination:
+            "/app/meeting.signal",
+
+        body:
+            JSON.stringify(payload)
+
+    });
+
+}
+
+// ============================================================
+// REMOTE VIDEO
+// ============================================================
+
+function attachRemoteVideo(
+    userId,
+    stream,
+    username
+) {
+
+    const cardId =
+        "remote-card-" +
+        userId;
+
+
+    let card =
+        document.getElementById(
+            cardId
+        );
+
+
+    if (!card) {
+
+        card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.id =
+            cardId;
+
+
+        card.className =
+            "video-card remote-video-card";
+
+
+        card.innerHTML = `
+
+            <video
+                id="remote-video-${userId}"
+                autoplay
+                playsinline>
+            </video>
+
+            <span
+                class="video-label"
+                id="remote-label-${userId}">
+
+                ${escapeHtml(username)}
+
+            </span>
+
+        `;
+
+
+        document.getElementById(
+            "videoGrid"
+        ).appendChild(
+            card
+        );
+
+    }
+
+
+    const video =
+        document.getElementById(
+            "remote-video-" +
+            userId
+        );
+
+
+    if (
+        video.srcObject !==
+        stream
+    ) {
+
+        video.srcObject =
+            stream;
+
+    }
+
+}
+
+
+// ============================================================
+// PARTICIPANTS
+// ============================================================
+
+function addParticipant(
+    id,
+    name
+) {
+
+    id =
+        Number(id);
+
+    if (!name || name === "null" || name === "undefined") {
+        name =
+            id === Number(meetingCreatorId)
+                ? meetingCreatorName
+                : "User";
+    }
+
+    participantNames[id] =
+        name;
+
+    const isAdmin =
+        id === Number(meetingCreatorId);
+
+
+    if (
+        document.getElementById(
+            "participant-" +
+            id
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.className =
+        "participant";
+
+
+    div.id =
+        "participant-" +
+        id;
+
+
+    div.innerHTML = `
+
+        <div class="participant-avatar">
+
+            ${escapeHtml(
+                name
+                    .charAt(0)
+                    .toUpperCase()
+            )}
+
+        </div>
+
+        <span class="participant-name">
+
+            ${escapeHtml(name)}
+
+            ${
+                isAdmin
+                    ? `
+                        <span style="
+                            margin-left:7px;
+                            padding:3px 7px;
+                            border-radius:10px;
+                            background:#3b2f08;
+                            color:#facc15;
+                            font-size:10px;
+                            font-weight:bold;
+                        ">
+                            👑 ADMIN
+                        </span>
+                      `
+                    : ""
+            }
+
+        </span>
+
+        <span class="participant-icons">
+
+            🎤
+
+        </span>
+
+    `;
+
+
+    document.getElementById(
+        "participants"
+    ).appendChild(
+        div
+    );
+
+    updateParticipantSummary();
+
+}
+
+
+function updateParticipantSummary() {
+
+    const container =
+        document.getElementById(
+            "participants"
+        );
+
+    const summary =
+        document.getElementById(
+            "participantSummary"
+        );
+
+    if (!container || !summary) {
+        return;
+    }
+
+    const count =
+        container.querySelectorAll(
+            ".participant"
+        ).length;
+
+    summary.textContent =
+        count === 1
+            ? "1 participant"
+            : count + " participants";
+}
+
+
+function removeParticipant(
+    id
+) {
+
+    id =
+        Number(id);
+
+
+    const element =
+        document.getElementById(
+            "participant-" +
+            id
+        );
+
+
+    if (element) {
+
+        element.remove();
+
+    }
+
+    updateParticipantSummary();
+
+
+    const videoCard =
+        document.getElementById(
+            "remote-card-" +
+            id
+        );
+
+
+    if (videoCard) {
+
+        videoCard.remove();
+
+    }
+
+
+    delete participantNames[id];
+
+}
+
+
+// ============================================================
+// MICROPHONE
+// ============================================================
+
+function toggleMicrophone() {
+
+    if (!localStream) {
+        return;
+    }
+
+
+    microphoneEnabled =
+        !microphoneEnabled;
+
+
+    localStream
+        .getAudioTracks()
+        .forEach(track => {
+
+            track.enabled =
+                microphoneEnabled;
+
+        });
+
+
+    document.getElementById(
+        "micButton"
+    ).classList.toggle(
+        "active",
+        microphoneEnabled
+    );
+
+}
+
+
+// ============================================================
+// CAMERA
+// ============================================================
+
+function toggleCamera() {
+
+    if (!localStream) {
+        return;
+    }
+
+
+    cameraEnabled =
+        !cameraEnabled;
+
+
+    localStream
+        .getVideoTracks()
+        .forEach(track => {
+
+            track.enabled =
+                cameraEnabled;
+
+        });
+
+
+    document.getElementById(
+        "cameraButton"
+    ).classList.toggle(
+        "active",
+        cameraEnabled
+    );
+
+}
+
+
+// ============================================================
+// SCREEN SHARE
+// ============================================================
+
+async function toggleScreenShare() {
+
+    if (sharingScreen) {
+
+        stopScreenShare();
+
+        return;
+
+    }
+
+
+    try {
+
+        screenStream =
+            await navigator.mediaDevices
+                .getDisplayMedia({
+
+                    video: true,
+
+                    audio: true
+
+                });
+
+
+        const screenTrack =
+            screenStream
+                .getVideoTracks()[0];
+
+
+        /*
+         * Replace camera track with
+         * screen track for every peer.
+         */
+        for (
+            const id in peers
+        ) {
+
+            const peer =
+                peers[id];
+
+
+            const sender =
+                peer
+                    .getSenders()
+                    .find(
+                        sender =>
+                            sender
+                                .track
+                                ?.kind ===
+                            "video"
+                    );
+
+
+            if (sender) {
+
+                await sender.replaceTrack(
+                    screenTrack
+                );
+
+            }
+
+        }
+
+
+        sharingScreen =
+            true;
+
+
+        document.getElementById(
+            "screenButton"
+        ).classList.add(
+            "active"
+        );
+
+
+        /*
+         * Show local screen.
+         */
+        let localScreen =
+            document.getElementById(
+                "localScreenPreview"
+            );
+
+
+        if (!localScreen) {
+
+            localScreen =
+                document.createElement(
+                    "video"
+                );
+
+
+            localScreen.id =
+                "localScreenPreview";
+
+
+            localScreen.autoplay =
+                true;
+
+
+            localScreen.muted =
+                true;
+
+
+            localScreen.playsInline =
+                true;
+
+
+            localScreen.style.position =
+                "fixed";
+
+
+            localScreen.style.right =
+                "20px";
+
+
+            localScreen.style.bottom =
+                "100px";
+
+
+            localScreen.style.width =
+                "250px";
+
+
+            localScreen.style.borderRadius =
+                "10px";
+
+
+            localScreen.style.border =
+                "2px solid #2563eb";
+
+
+            localScreen.style.zIndex =
+                "20";
+
+
+            document.body.appendChild(
+                localScreen
+            );
+
+        }
+
+
+        localScreen.srcObject =
+            screenStream;
+
+
+        broadcastScreenShare(
+            true
+        );
+
+
+        screenTrack.onended =
+            function () {
+
+                stopScreenShare();
+
+            };
+
+
+    } catch (error) {
+
+        console.log(
+            "Screen sharing cancelled:",
+            error
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// STOP SCREEN SHARE
+// ============================================================
+
+async function stopScreenShare() {
+
+    if (!sharingScreen) {
+        return;
+    }
+
+
+    const cameraTrack =
+        localStream
+            ?.getVideoTracks()[0];
+
+
+    /*
+     * Restore camera for all peers.
+     */
+    for (
+        const id in peers
+    ) {
+
+        const peer =
+            peers[id];
+
+
+        const sender =
+            peer
+                .getSenders()
+                .find(
+                    sender =>
+                        sender
+                            .track
+                            ?.kind ===
+                        "video"
+                );
+
+
+        if (
+            sender &&
+            cameraTrack
+        ) {
+
+            await sender.replaceTrack(
+                cameraTrack
+            );
+
+        }
+
+    }
+
+
+    if (screenStream) {
+
+        screenStream
+            .getTracks()
+            .forEach(
+                track =>
+                    track.stop()
+            );
+
+    }
+
+
+    screenStream =
+        null;
+
+
+    const localScreen =
+        document.getElementById(
+            "localScreenPreview"
+        );
+
+
+    if (localScreen) {
+
+        localScreen.remove();
+
+    }
+
+
+    sharingScreen =
+        false;
+
+
+    document.getElementById(
+        "screenButton"
+    ).classList.remove(
+        "active"
+    );
+
+
+    broadcastScreenShare(
+        false
+    );
+
+}
+
+
+// ============================================================
+// SCREEN SHARE EVENT
+// ============================================================
+
+function broadcastScreenShare(
+    active
+) {
+
+    if (
+        !stompClient ||
+        !stompClient.connected
+    ) {
+
+        console.error(
+            "Cannot broadcast screen status: STOMP not connected."
+        );
+
+        return;
+    }
+
+
+    const payload = {
+
+        meetingId:
+            Number(meetingId),
+
+        userId:
+            Number(currentUser.id),
+
+        username:
+            currentUser.username ||
+            "User",
+
+        active:
+            active
+
+    };
+
+
+    stompClient.publish({
+
+        destination:
+            "/app/meeting.screen",
+
+        body:
+            JSON.stringify(payload)
+
+    });
+
+}
+// ============================================================
+// MEETING CHAT
+// ============================================================
+
+function sendMeetingChat() {
+
+    const input =
+        document.getElementById(
+            "meetingChatInput"
+        );
+
+
+    const message =
+        input.value.trim();
+
+
+    if (!message) {
+
+        return;
+
+    }
+
+
+    if (
+        !stompClient ||
+        !stompClient.connected
+    ) {
+
+        alert(
+            "Chat is not connected yet. Please wait a moment and try again."
+        );
+
+        console.error(
+            "STOMP connection is not ready."
+        );
+
+        return;
+
+    }
+
+
+    const payload = {
+
+        meetingId:
+            Number(meetingId),
+
+        userId:
+            Number(currentUser.id),
+
+        username:
+            currentUser.username ||
+            "User",
+
+        message:
+            message
+
+    };
+
+
+    console.log(
+        "Sending meeting chat:",
+        payload
+    );
+
+
+    stompClient.publish({
+
+        destination:
+            "/app/meeting.chat",
+
+        body:
+            JSON.stringify(payload)
+
+    });
+
+
+    input.value = "";
+
+    input.focus();
+
+}
+
+// ============================================================
+// CHAT ENTER
+// ============================================================
+
+function handleMeetingChatKey(
+    event
+) {
+
+    if (
+        event.key ===
+        "Enter"
+    ) {
+
+        event.preventDefault();
+
+        sendMeetingChat();
+
+    }
+
+}
+
+
+// ============================================================
+// RENDER CHAT
+// ============================================================
+
+function addChatMessage(
+    sender,
+    message,
+    timestamp
+) {
+
+    const container =
+        document.getElementById(
+            "chatMessages"
+        );
+
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.className =
+        "chat-message";
+
+
+    const time =
+        timestamp
+            ? new Date(
+                timestamp
+              ).toLocaleTimeString(
+                [],
+                {
+                    hour:
+                        "2-digit",
+
+                    minute:
+                        "2-digit"
+                }
+              )
+            : "";
+
+
+    div.innerHTML = `
+
+        <div class="chat-sender">
+
+            ${escapeHtml(sender)}
+
+            <span class="chat-time">
+
+                ${time}
+
+            </span>
+
+        </div>
+
+        <div class="chat-text">
+
+            ${escapeHtml(message)}
+
+        </div>
+
+    `;
+
+
+    container.appendChild(
+        div
+    );
+
+
+    container.scrollTop =
+        container.scrollHeight;
+
+}
+
+
+// ============================================================
+// CLOSE PEER
+// ============================================================
+
+function closePeer(
+    userId
+) {
+
+    userId =
+        Number(userId);
+
+
+    const peer =
+        peers[userId];
+
+
+    if (peer) {
+
+        peer.close();
+
+        delete peers[userId];
+
+    }
+
+
+    const videoCard =
+        document.getElementById(
+            "remote-card-" +
+            userId
+        );
+
+
+    if (videoCard) {
+
+        videoCard.remove();
+
+    }
+
+}
+
+
+// ============================================================
+// PANELS
+// ============================================================
+
+function togglePanel(
+    panel
+) {
+
+    const participantsPanel =
+        document.getElementById(
+            "participantsPanel"
+        );
+
+
+    const chatPanel =
+        document.getElementById(
+            "chatPanel"
+        );
+
+
+    const participantsTab =
+        document.getElementById(
+            "participantsTab"
+        );
+
+
+    const chatTab =
+        document.getElementById(
+            "chatTab"
+        );
+
+
+    if (
+        panel ===
+        "chat"
+    ) {
+
+        participantsPanel
+            .classList.add(
+                "hidden"
+            );
+
+
+        chatPanel
+            .classList.remove(
+                "hidden"
+            );
+
+
+        participantsTab
+            .classList.remove(
+                "active"
+            );
+
+
+        chatTab
+            .classList.add(
+                "active"
+            );
+
+    } else {
+
+        chatPanel
+            .classList.add(
+                "hidden"
+            );
+
+
+        participantsPanel
+            .classList.remove(
+                "hidden"
+            );
+
+
+        chatTab
+            .classList.remove(
+                "active"
+            );
+
+
+        participantsTab
+            .classList.add(
+                "active"
+            );
+
+    }
+
+}
+
+
+// ============================================================
+// FULLSCREEN
+// ============================================================
+
+function toggleFullscreen() {
+
+    if (
+        !document.fullscreenElement
+    ) {
+
+        document.documentElement
+            .requestFullscreen();
+
+    } else {
+
+        document.exitFullscreen();
+
+    }
+
+}
+
+
+// ============================================================
+// LEAVE
+// ============================================================
+
+function leaveMeeting() {
+
+    try {
+
+        if (
+            stompClient &&
+            stompClient.connected
+        ) {
+
+            stompClient.publish({
+
+                destination:
+                    "/app/meeting.leave",
+
+                body:
+                    JSON.stringify({
+
+                        meetingId:
+                            Number(meetingId),
+
+                        userId:
+                            Number(currentUser.id),
+
+                        username:
+                            currentUser.username ||
+                            "User"
+
+                    })
+
+            });
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+    }
+
+
+    /*
+     * Close all WebRTC connections.
+     */
+    Object.keys(peers)
+        .forEach(
+            id =>
+                closePeer(id)
+        );
+
+
+    if (localStream) {
+
+        localStream
+            .getTracks()
+            .forEach(
+                track =>
+                    track.stop()
+            );
+
+    }
+
+
+    if (screenStream) {
+
+        screenStream
+            .getTracks()
+            .forEach(
+                track =>
+                    track.stop()
+            );
+
+    }
+
+
+    if (
+        stompClient &&
+        stompClient.connected
+    ) {
+
+        stompClient.deactivate();
+
+    }
+
+
+    window.location.href =
+        "/index.html";
+
+}
+
+
+// ============================================================
+// ESCAPE HTML
+// ============================================================
+
+function escapeHtml(
+    value
+) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        value ?? "";
+
+
+    return div.innerHTML;
+
+}
+
+</script>
+
+</body>
+
+</html>

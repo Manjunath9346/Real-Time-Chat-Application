@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ChatApp</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="authPage" class="auth-page">
+
+    <div class="auth-card">
+
+        <div class="logo">
+            Chat<span>App</span>
+        </div>
+
+        <p class="subtitle">
+            Connect. Chat. Collaborate.
+        </p>
+
+        <div class="auth-tabs">
+            <button id="loginTab" onclick="showLogin()">
+                Login
+            </button>
+
+            <button id="registerTab" onclick="showRegister()">
+                Register
+            </button>
+        </div>
+
+        <div id="loginForm">
+
+            <input
+                id="loginUsername"
+                type="text"
+                placeholder="Username">
+
+            <input
+                id="loginPassword"
+                type="password"
+                placeholder="Password">
+
+            <button class="primary-btn" onclick="login()">
+                Login
+            </button>
+
+        </div>
+
+        <div id="registerForm" class="hidden">
+
+            <input
+                id="registerUsername"
+                type="text"
+                placeholder="Username">
+
+            <input
+                id="registerEmail"
+                type="email"
+                placeholder="Email">
+
+            <input
+                id="registerPassword"
+                type="password"
+                placeholder="Password">
+
+            <input
+                id="registerConfirm"
+                type="password"
+                placeholder="Confirm Password">
+
+            <button class="primary-btn" onclick="register()">
+                Create Account
+            </button>
+
+        </div>
+
+        <p id="authMessage"></p>
+
+    </div>
+
+</div>
+
+
+<div id="chatPage" class="chat-page hidden">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+
+            <div>
+                <h2>ChatApp</h2>
+                <small id="currentUser"></small>
+            </div>
+
+            <button onclick="logout()" class="logout-btn">
+                Logout
+            </button>
+
+        </div>
+
+        <div class="search-box">
+
+            <input
+                id="searchInput"
+                placeholder="Search users..."
+                oninput="searchUsers()">
+
+        </div>
+
+        <div class="sidebar-actions">
+
+            <button onclick="showCreateGroup()">
+                + Group
+            </button>
+
+            <button onclick="showMeeting()">
+                📅 Meeting
+            </button>
+
+        </div>
+
+        <h3>Contacts</h3>
+
+        <div id="contactsList"></div>
+        <h3 class="sidebar-section-title notification-title">
+
+            Contact Requests
+
+            <span
+                id="notificationDot"
+                class="notification-dot hidden">
+            </span>
+
+        </h3>
+
+        <div id="requestsList"></div>
+
+        <h3>Groups</h3>
+
+        <div id="groupsList"></div>
+
+        <div class="meetings-section">
+
+            <div class="section-title-row">
+
+                <h3>
+                    Meetings
+                </h3>
+
+                <button
+                    class="join-meeting-button"
+                    onclick="joinMeetingByCode()">
+
+                    Join
+
+                </button>
+
+            </div>
+
+            <div
+                id="meetingsList"
+                class="meetings-list">
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <main class="chat-area">
+
+        <header class="chat-header">
+
+            <div>
+
+                <h2 id="chatTitle">
+                    Select a conversation
+                </h2>
+
+                <span id="chatStatus"></span>
+
+            </div>
+
+        </header>
+
+
+        <section id="messages" class="messages">
+
+            <div class="welcome">
+
+                <h1>Welcome to ChatApp 👋</h1>
+
+                <p>
+                    Select a contact or group to start chatting.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <div class="chat-input-area">
+
+            <input
+                type="file"
+                id="fileInput"
+                hidden
+                onchange="uploadFile()">
+
+            <button
+                class="attach-btn"
+                onclick="document.getElementById('fileInput').click()">
+                📎
+            </button>
+
+            <input
+                id="messageInput"
+                placeholder="Type a message..."
+                onkeydown="handleEnter(event)">
+
+            <button
+                class="send-btn"
+                onclick="sendMessage()">
+                Send
+            </button>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<div id="groupModal" class="modal hidden">
+
+    <div class="modal-card">
+
+        <h2>Create Group</h2>
+
+        <input
+            id="groupName"
+            placeholder="Group name">
+
+        <textarea
+            id="groupDescription"
+            placeholder="Group description"></textarea>
+
+        <div class="modal-buttons">
+
+            <button onclick="createGroup()">
+                Create
+            </button>
+
+            <button onclick="closeModals()">
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div id="meetingModal" class="modal hidden">
+
+    <div class="modal-card">
+
+        <h2>Schedule Meeting</h2>
+
+        <input
+            id="meetingTitle"
+            placeholder="Meeting title">
+
+        <input
+            id="meetingDate"
+            type="datetime-local">
+
+        <textarea
+            id="meetingDescription"
+            placeholder="Meeting description"></textarea>
+
+        <div class="meeting-for-group" id="meetingGroupInfo">
+            Personal Meeting
+        </div>
+
+        <div class="modal-buttons">
+
+            <button onclick="createMeeting()">
+                Schedule
+            </button>
+
+            <button onclick="closeModals()">
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div id="meetingDetailsModal" class="modal hidden">
+
+    <div class="modal-card meeting-details-card">
+
+        <div class="meeting-details-header">
+
+            <div>
+                <h2 id="detailsMeetingTitle">
+                    Meeting
+                </h2>
+
+                <span
+                    id="detailsMeetingStatus"
+                    class="meeting-status">
+                    UPCOMING
+                </span>
+            </div>
+
+            <button
+                class="close-modal-btn"
+                onclick="closeMeetingDetails()">
+
+                ✕
+
+            </button>
+
+        </div>
+
+
+        <div class="meeting-details-body">
+
+            <div class="detail-row">
+
+                <strong>
+                    📅 Date & Time
+                </strong>
+
+                <span id="detailsMeetingDate">
+                </span>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <strong>
+                    🔗 Meeting Code
+                </strong>
+
+                <div class="code-row">
+
+                    <span
+                        id="detailsMeetingCode">
+                    </span>
+
+                    <button
+                        onclick="copyCurrentMeetingCode()">
+
+                        Copy
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <strong>
+                    👥 Type
+                </strong>
+
+                <span id="detailsMeetingType">
+                </span>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <strong>
+                    📝 Description
+                </strong>
+
+                <p
+                    id="detailsMeetingDescription">
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="meeting-details-actions">
+
+            <button
+                id="joinMeetingDetailsBtn"
+                class="join-details-btn">
+
+                ▶ Join Meeting
+
+            </button>
+
+            <button
+                id="deleteMeetingDetailsBtn"
+                class="delete-details-btn">
+
+                🗑 Delete
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="addMemberModal" class="modal hidden">
+
+    <div class="modal-card">
+
+        <h2>Add Member</h2>
+
+        <p class="modal-subtitle">
+            Search for a username to add to this group.
+        </p>
+
+        <input
+            id="memberSearchInput"
+            type="text"
+            placeholder="Enter username..."
+            oninput="searchGroupMembers()">
+
+        <div
+            id="memberSearchResults"
+            class="member-search-results">
+
+            <div class="empty-list">
+                Search for a username to add.
+            </div>
+
+        </div>
+
+        <div class="modal-buttons">
+
+            <button
+                onclick="closeAddMemberModal()">
+
+                Cancel
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="groupInfoModal" class="modal hidden">
+
+    <div class="modal-card group-info-modal">
+
+        <div class="group-info-modal-header">
+
+            <h2>
+                Group Info
+            </h2>
+
+            <button
+                class="close-modal-btn"
+                onclick="closeGroupInfo()">
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <div id="groupInfoContent">
+
+            <div class="empty-list">
+                Loading group information...
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
