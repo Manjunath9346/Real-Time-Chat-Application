@@ -153,15 +153,39 @@
                     Meetings
                 </h3>
 
-                <button
-                    class="join-meeting-button"
-                    onclick="joinMeetingByCode()">
+                <div class="meeting-header-actions">
 
-                    Join
+                    <button
+                        class="create-meeting-button"
+                        onclick="showMeeting()">
 
-                </button>
+                        + Create
+
+                    </button>
+
+                    <button
+                        class="join-meeting-button"
+                        onclick="joinMeetingByCode()">
+
+                        Join
+
+                    </button>
+
+                </div>
 
             </div>
+
+
+            <div class="meeting-search-box">
+
+                <input
+                    id="meetingSearchInput"
+                    type="text"
+                    placeholder="Search meetings..."
+                    oninput="filterMeetings()">
+
+            </div>
+
 
             <div
                 id="meetingsList"
@@ -358,14 +382,19 @@
 
                 <div class="code-row">
 
-                    <span
-                        id="detailsMeetingCode">
-                    </span>
+                    <span id="detailsMeetingCode"></span>
 
                     <button
                         onclick="copyCurrentMeetingCode()">
 
-                        Copy
+                        Copy Code
+
+                    </button>
+
+                    <button
+                        onclick="copyCurrentMeetingLink()">
+
+                        Copy Link
 
                     </button>
 

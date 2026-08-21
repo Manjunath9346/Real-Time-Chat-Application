@@ -2547,3 +2547,90 @@ button {
         padding: 20px;
     }
 }
+.meeting-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.create-meeting-button,
+.join-meeting-button {
+    border: none;
+
+    padding: 6px 9px;
+
+    border-radius: 7px;
+
+    background: var(--primary-light);
+
+    color: var(--primary);
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.create-meeting-button:hover,
+.join-meeting-button:hover {
+    background: #e0e7ff;
+}
+
+.meeting-search-box {
+    padding: 0 15px 9px;
+}
+
+.meeting-search-box input {
+    width: 100%;
+
+    height: 34px;
+
+    padding: 0 10px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    outline: none;
+
+    background: #f8fafc;
+
+    color: var(--text);
+
+    font-size: 11px;
+}
+
+.meeting-search-box input:focus {
+    background: white;
+
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(99,102,241,.08);
+}
+
+.meeting-code-preview {
+    margin-top: 3px;
+
+    color: var(--primary);
+
+    font-family: monospace;
+
+    font-size: 9px;
+
+    letter-spacing: .3px;
+}
+
+.code-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.code-row span {
+    flex: 1;
+    min-width: 0;
+}
+
+.code-row button {
+    white-space: nowrap;
+}

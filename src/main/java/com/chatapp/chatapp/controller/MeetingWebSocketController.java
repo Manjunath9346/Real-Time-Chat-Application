@@ -245,12 +245,16 @@ public class MeetingWebSocketController {
                         meetingId
                 );
 
-        /*
-        * Frontend handleSignal() expects
-        * data.type to contain OFFER / ANSWER / ICE.
-        */
+        // IMPORTANT:
+        // Keep event type as SIGNAL.
         response.put(
                 "type",
+                "SIGNAL"
+        );
+
+        // Put OFFER / ANSWER / ICE separately.
+        response.put(
+                "signalType",
                 signalType
         );
 

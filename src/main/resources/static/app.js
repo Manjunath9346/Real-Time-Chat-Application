@@ -223,9 +223,7 @@ function openChatPage() {
     loadGroups();
     loadMeetings();
 
-    startMessageRefresh();
     startHeartbeat();
-    startStatusRefresh();
 }
 // ===============================
 // USERS
@@ -282,6 +280,9 @@ async function loadContacts() {
             div.className =
                 "user-item";
 
+            div.dataset.userId =
+                user.id;
+
             const status =
                 user.status || "OFFLINE";
 
@@ -329,7 +330,54 @@ async function refreshContactStatuses() {
 
     try {
 
-        await loadContacts();
+        const response = await fetch(
+            API + "/contacts/" + currentUser.id
+        );
+
+        if (!response.ok) {
+            return;
+        }
+
+        const contacts = await response.json();
+
+        contacts.forEach(user => {
+
+            const item = document.querySelector(
+                `.user-item[data-user-id="${user.id}"]`
+            );
+
+            if (!item) {
+                return;
+            }
+
+            const statusElement =
+                item.querySelector(".user-status");
+
+            const dot =
+                item.querySelector(".status-dot");
+
+            const status =
+                user.status || "OFFLINE";
+
+            if (statusElement) {
+
+                statusElement.textContent = status;
+
+                if (dot) {
+                    statusElement.prepend(dot);
+                }
+
+                statusElement.classList.toggle(
+                    "online",
+                    status === "ONLINE"
+                );
+
+                statusElement.classList.toggle(
+                    "offline",
+                    status !== "ONLINE"
+                );
+            }
+        });
 
         if (currentChatUser) {
 
@@ -348,10 +396,15 @@ async function refreshContactStatuses() {
                 currentChatUser.status =
                     data.status;
 
-                document.getElementById(
-                    "chatStatus"
-                ).textContent =
-                    data.status;
+                const chatStatus =
+                    document.getElementById(
+                        "chatStatus"
+                    );
+
+                if (chatStatus) {
+                    chatStatus.textContent =
+                        data.status;
+                }
             }
         }
 
@@ -363,19 +416,8 @@ async function refreshContactStatuses() {
         );
     }
 }
-
 function startStatusRefresh() {
-
-    if (statusRefreshTimer) {
-        clearInterval(statusRefreshTimer);
-    }
-
-    statusRefreshTimer =
-        setInterval(() => {
-
-            refreshContactStatuses();
-
-        }, 10000);
+    // Automatic status refresh disabled.
 }
 
 // ===============================
@@ -730,24 +772,9 @@ function handleEnter(event) {
 // REAL-TIME REFRESH
 // ===============================
 
+
 function startMessageRefresh() {
-
-    if (messageRefreshTimer) {
-        clearInterval(messageRefreshTimer);
-    }
-
-    messageRefreshTimer =
-        setInterval(() => {
-
-            if (currentChatUser) {
-                loadMessages();
-            }
-
-            if (currentGroup) {
-                loadGroupMessages();
-            }
-
-        }, 1500);
+    // Automatic message refresh disabled.
 }
 
 
@@ -2564,6 +2591,115 @@ async function rejectContact(requestId) {
     }
 }
 
+let allMeetings = [];
+
+
+
+
+async function loadMeetings() {
+
+    if (!currentUser || !currentUser.id) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                API +
+                "/meetings/user/" +
+                currentUser.id
+            );
+
+        if (!response.ok) {
+
+            console.error(
+                "Unable to load meetings:",
+                response.status
+            );
+
+            return;
+        }
+
+        const meetings =
+            await response.json();
+
+        allMeetings =
+            Array.isArray(meetings)
+                ? meetings
+                : [];
+
+        renderMeetings(
+            allMeetings
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Meeting loading error:",
+            error
+        );
+    }
+}
+
+function filterMeetings() {
+
+    const input =
+        document.getElementById(
+            "meetingSearchInput"
+        );
+
+    if (!input) {
+        return;
+    }
+
+    const query =
+        input.value
+            .trim()
+            .toLowerCase();
+
+    if (!query) {
+
+        renderMeetings(
+            allMeetings
+        );
+
+        return;
+    }
+
+    const filtered =
+        allMeetings.filter(
+            meeting => {
+
+                const title =
+                    String(
+                        meeting.title || ""
+                    ).toLowerCase();
+
+                const code =
+                    String(
+                        meeting.meetingCode || ""
+                    ).toLowerCase();
+
+                const description =
+                    String(
+                        meeting.description || ""
+                    ).toLowerCase();
+
+                return (
+                    title.includes(query) ||
+                    code.includes(query) ||
+                    description.includes(query)
+                );
+
+            }
+        );
+
+    renderMeetings(
+        filtered
+    );
+}
+
 // ===============================
 // MEETING
 // ===============================
@@ -2873,6 +3009,13 @@ function renderMeetings(meetings) {
                         formatMeetingDate(
                             meeting.dateTime
                         )
+                    )}
+                </div>
+
+                <div class="meeting-code-preview">
+                    Code:
+                    ${escapeHtml(
+                        meeting.meetingCode || "N/A"
                     )}
                 </div>
 
@@ -3351,6 +3494,44 @@ async function copyMeetingCode(code) {
         );
     }
 }
+
+
+async function copyMeetingLink(code) {
+
+    if (!code) {
+        return;
+    }
+
+    const link =
+        window.location.origin +
+        "/meeting-room.html?code=" +
+        encodeURIComponent(code);
+
+    try {
+
+        await navigator.clipboard.writeText(
+            link
+        );
+
+        showToast(
+            "Meeting link copied.",
+            "success"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Copy meeting link error:",
+            error
+        );
+
+        prompt(
+            "Copy meeting link:",
+            link
+        );
+    }
+}
+
 // ===============================
 // MODALS
 // ===============================
